@@ -2,6 +2,7 @@
 
 from typing import List
 from pydantic import BaseModel
+import os
 from langchain.schema import Document
 
 class RAGState(BaseModel):
