@@ -2,7 +2,6 @@
 
 from typing import List, Optional
 from src.state.rag_state import RAGState
-
 from langchain_core.documents import Document
 from langchain_core.tools import Tool
 from langchain_core.messages import HumanMessage
@@ -11,7 +10,6 @@ from langgraph.prebuilt import create_react_agent
 # Wikipedia tool
 from langchain_community.utilities import WikipediaAPIWrapper
 from langchain_community.tools.wikipedia.tool import WikipediaQueryRun
-
 
 class RAGNodes:
     """Contains node functions for RAG workflow"""

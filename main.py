@@ -2,8 +2,7 @@
 
 import sys
 from pathlib import Path
-
-# Add src to path
+import react    
 sys.path.append(str(Path(__file__).parent))
 
 from src.config.config import Config
@@ -119,7 +118,7 @@ def main():
     
     # Optional: Run interactive mode
     print("\n" + "=" * 80)
-    user_input = input("Would you like to enter interactive mode? (y/n): ")
+    user_input = input("Would you like to enter the most developed interactive mode? (y/n): ")
     if user_input.lower() == 'y':
         rag.interactive_mode()
 
