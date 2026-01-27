@@ -116,7 +116,6 @@ def main():
         rag.ask(question)
         print("=" * 80 + "\n")
     
-    # Optional: Run interactive mode
     print("\n" + "=" * 80)
     user_input = input("Would you like to enter the most developed interactive mode? (y/n): ")
     if user_input.lower() == 'y':
