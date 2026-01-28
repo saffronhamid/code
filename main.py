@@ -90,7 +90,6 @@ class AgenticRAG:
 
 def main():
     """Main function"""
-    # Example: Load URLs from file if exists
     urls_file = Path("data/urls.txt")
     urls = None
     
