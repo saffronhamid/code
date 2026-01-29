@@ -97,7 +97,7 @@ def main():
         with open(urls_file, 'r') as f:
             urls = [line.strip() for line in f if line.strip()]
     
-    # Initialize RAG system
+    # Initialize RAG
     rag = AgenticRAG(urls=urls)
     
     # Example questions
