@@ -1,6 +1,7 @@
 """Main application entry point for Agentic RAG system"""
 
 import sys
+import os 
 from pathlib import Path
 import react    
 sys.path.append(str(Path(__file__).parent))
