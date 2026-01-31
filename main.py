@@ -1,9 +1,8 @@
 """Main application entry point for Agentic RAG system"""
 
 import sys
-import os 
+import os
 from pathlib import Path
-import react    
 sys.path.append(str(Path(__file__).parent))
 
 from src.config.config import Config
@@ -14,17 +13,19 @@ from src.graph_builder.graph_builder import GraphBuilder
 class AgenticRAG:
     """Main Agentic RAG application"""
     
-    def __init__(self, urls=None):
+    def __init__(self, sources=None, urls=None):
         """
         Initialize Agentic RAG system
         
         Args:
-            urls: List of URLs to process (uses defaults if None)
+            sources: List of sources (URLs, files, or directories) to process (uses defaults if None)
+            urls: Backward-compatible alias for sources (URLs only)
         """
         print("🚀 Initializing Agentic RAG System...")
         
-        # Use default URLs if none provided
-        self.urls = urls or Config.DEFAULT_URLS
+        # Use default sources if none provided
+        self.sources = sources or urls or Config.DEFAULT_SOURCES
+        self.urls = self.sources
         
         # Initialize components
         self.llm = Config.get_llm()
@@ -91,15 +92,25 @@ class AgenticRAG:
 
 def main():
     """Main function"""
-    urls_file = Path("data/urls.txt")
-    urls = None
-    
-    if urls_file.exists():
-        with open(urls_file, 'r') as f:
-            urls = [line.strip() for line in f if line.strip()]
+    sources_file_candidates = [
+        Path("data/sources.txt"),
+        Path("data/urls.txt"),
+        Path("data/url.txt"),
+    ]
+    sources = None
+
+    for candidate in sources_file_candidates:
+        if candidate.exists():
+            with open(candidate, "r", encoding="utf-8") as f:
+                sources = [
+                    line.strip()
+                    for line in f
+                    if line.strip() and not line.strip().startswith("#")
+                ]
+            break
     
     # Initialize RAG
-    rag = AgenticRAG(urls=urls)
+    rag = AgenticRAG(sources=sources)
     
     # Example questions
     example_questions = [

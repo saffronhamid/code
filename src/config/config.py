@@ -25,6 +25,9 @@ class Config:
         "https://lilianweng.github.io/posts/2023-06-23-agent/",
         "https://lilianweng.github.io/posts/2024-04-12-diffusion-video/"
     ]
+
+    # Default sources (URLs + local folder)
+    DEFAULT_SOURCES = DEFAULT_URLS + ["data"]
     
     @classmethod
     def get_llm(cls):

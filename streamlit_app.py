@@ -4,6 +4,8 @@ import streamlit as st
 from pathlib import Path
 import sys
 import time
+import tempfile
+from typing import List
 
 # Add src to path
 sys.path.append(str(Path(__file__).parent))
@@ -38,11 +40,13 @@ def init_session_state():
         st.session_state.rag_system = None
     if 'initialized' not in st.session_state:
         st.session_state.initialized = False
+    if "sources_key" not in st.session_state:
+        st.session_state.sources_key = None
     if 'history' not in st.session_state:
         st.session_state.history = []
 
 @st.cache_resource
-def initialize_rag():
+def initialize_rag(sources_key: tuple[str, ...]):
     """Initialize the RAG system (cached)"""
     try:
         # Initialize components
@@ -52,12 +56,12 @@ def initialize_rag():
             chunk_overlap=Config.CHUNK_OVERLAP
         )
         vector_store = VectorStore()
-        
-        # Use default URLs
-        urls = Config.DEFAULT_URLS
-        
+
+        if not sources_key:
+            raise ValueError("No sources provided.")
+
         # Process documents
-        documents = doc_processor.process_urls(urls)
+        documents = doc_processor.process_sources(list(sources_key))
         
         # Create vector store
         vector_store.create_vectorstore(documents)
@@ -74,6 +78,21 @@ def initialize_rag():
         st.error(f"Failed to initialize: {str(e)}")
         return None, 0
 
+def _parse_sources(text: str) -> List[str]:
+    sources: List[str] = []
+    for line in (text or "").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        sources.append(line)
+    return sources
+
+def _save_upload_to_temp(uploaded_file) -> str:
+    suffix = Path(uploaded_file.name).suffix or ".bin"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(uploaded_file.getvalue())
+        return tmp.name
+
 def main():
     """Main application"""
     init_session_state()
@@ -81,11 +100,37 @@ def main():
     # Title
     st.title("🔍 RAG Document Search")
     st.markdown("Ask questions about the loaded documents")
-    
+
+    with st.sidebar:
+        st.markdown("### Sources")
+        st.caption("One per line: URL, local file path, or directory path.")
+        default_sources = "\n".join(Config.DEFAULT_SOURCES)
+        sources_text = st.text_area(
+            "Sources list",
+            value=default_sources,
+            height=160,
+            label_visibility="collapsed",
+        )
+        uploads = st.file_uploader(
+            "Upload PDFs/TXTs",
+            type=["pdf", "txt"],
+            accept_multiple_files=True,
+        )
+
+    sources = _parse_sources(sources_text)
+    for up in uploads or []:
+        sources.append(_save_upload_to_temp(up))
+
+    sources_key = tuple(sources)
+    if st.session_state.sources_key != sources_key:
+        st.session_state.sources_key = sources_key
+        st.session_state.initialized = False
+        st.session_state.rag_system = None
+
     # Initialize system
     if not st.session_state.initialized:
         with st.spinner("Loading system..."):
-            rag_system, num_chunks = initialize_rag()
+            rag_system, num_chunks = initialize_rag(sources_key)
             if rag_system:
                 st.session_state.rag_system = rag_system
                 st.session_state.initialized = True
