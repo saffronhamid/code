@@ -122,7 +122,7 @@ def main():
     print("=" * 80)
     print("📝 Running example questions:")
     print("=" * 80 + "\n")
-    
+    asd
     for question in example_questions:
         rag.ask(question)
         print("=" * 80 + "\n")
