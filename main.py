@@ -112,7 +112,6 @@ def main():
     # Initialize RAG
     rag = AgenticRAG(sources=sources)
     
-    # Example questions
     example_questions = [
         "What is the concept of agent loop in autonomous agents?",
         "What are the key components of LLM-powered agents?",
