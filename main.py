@@ -109,7 +109,7 @@ def main():
                 ]
             break
     
-    # Initialize RAG RAG RAG
+    # Initialize RAG RAG RAG with all the code being run 
     rag = AgenticRAG(sources=sources)
     
     example_questions = [
