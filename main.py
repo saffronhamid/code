@@ -1,8 +1,8 @@
 """Main application entry point for Agentic RAG system"""
 
 import sys
-import os
 from pathlib import Path
+import os
 sys.path.append(str(Path(__file__).parent))
 
 from src.config.config import Config
