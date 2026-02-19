@@ -1,0 +1,110 @@
+\\documentclass{article}
+
+\\title{RAG Q\&A Project: A Detailed System Description}
+\\author{}
+\\date{}
+
+\\begin{document}
+\\maketitle
+
+\\begin{abstract}
+This paper describes a question answering system that combines a local document set with Wikipedia. The system loads documents, splits them into chunks, creates embeddings, and stores them in a FAISS index. For each user query, a small workflow decides whether to use the local index or Wikipedia and then produces a final answer. We focus on system design, implementation details, and practical lessons.
+\\end{abstract}
+
+\\section{Introduction}
+Question answering systems often need both private knowledge and general knowledge. This project combines a local corpus with Wikipedia to improve coverage. The goal is a clear, simple workflow that can be used from a command line tool or a small web app.
+
+\\section{Problem Statement}
+The system must answer questions using two sources:
+\\begin{itemize}
+\\item Local documents such as PDFs, text files, and web pages.
+\\item Wikipedia for questions not covered by local files.
+\\end{itemize}
+The system should decide which source to use for each query and return a short answer.
+
+\\section{System Overview}
+The system has two main phases:
+\\begin{itemize}
+\\item Offline build: load documents, split them into chunks, create embeddings, and store them in FAISS.
+\\item Online query: select a tool (local retriever or Wikipedia) and generate an answer.
+\\end{itemize}
+
+\\section{Data Sources}
+Local sources are provided by text files and URLs. The system reads:
+\\begin{itemize}
+\\item `data/sources.txt` or `data/urls.txt` for web sources.
+\\item Files in `data/` such as PDFs and TXT files.
+\\end{itemize}
+These sources are treated as the local knowledge base.
+
+\\section{Document Processing}
+Documents are split into small chunks with overlap. Overlap helps preserve context across chunk boundaries. The system uses a recursive splitter to keep chunk sizes consistent while respecting natural text boundaries.
+
+\\section{Embeddings and Vector Index}
+Each chunk is converted to a vector using OpenAI embeddings. The vectors are stored in a FAISS index that supports fast similarity search. At query time, the system retrieves the most relevant chunks from this index.
+
+\\section{Workflow and Tool Selection}
+The system uses a small workflow graph. A ReAct-style agent selects between two tools:
+\\begin{itemize}
+\\item Local retriever: searches the FAISS index.
+\\item Wikipedia tool: queries Wikipedia for general knowledge.
+\\end{itemize}
+The agent then produces a final answer from the chosen tool output.
+
+\\section{Implementation Details}
+Key modules are organized as follows:
+\\begin{itemize}
+\\item `src/config/config.py`: loads environment settings and model choices.
+\\item `src/document_ingestion/document_processor.py`: loads and splits documents.
+\\item `src/vectorstore/vectorstore.py`: creates embeddings and FAISS index.
+\\item `src/graph_builder/graph_builder.py`: builds the workflow graph.
+\\item `src/node/reactnode.py`: defines tools and the agent.
+\\item `src/state/rag_state.py`: defines the workflow state.
+\\end{itemize}
+
+\\section{Interfaces}
+The system has two entry points:
+\\begin{itemize}
+\\item CLI: `main.py`
+\\item Web UI: `streamlit_app.py`
+\\end{itemize}
+The CLI supports example queries and interactive mode. The web UI supports file uploads, source editing, and interactive querying.
+
+\\section{Evaluation}
+A formal evaluation has not been implemented. Informal checks show that local questions are answered using the FAISS index and general questions are answered using Wikipedia. Future work should add a test set and measure accuracy, retrieval quality, and tool selection behavior.
+
+\\section{Limitations}
+\\begin{itemize}
+\\item The FAISS index is rebuilt on each run, which increases startup time.
+\\item Wikipedia access requires internet connectivity.
+\\item Answers do not include citations.
+\\end{itemize}
+
+\\section{Future Work}
+Possible improvements include:
+\\begin{itemize}
+\\item Persisting the FAISS index to disk.
+\\item Adding citations to link answers to sources.
+\\item Adding tests for ingestion, retrieval, and routing.
+\\item Adding a small benchmark for repeatable evaluation.
+\\end{itemize}
+
+\\section{Lessons Learned}
+\\subsection{Technical Learnings}
+\\begin{itemize}
+\\item Smaller chunks with overlap improve retrieval quality.
+\\item Tool selection logic strongly affects answer quality.
+\\item A simple workflow graph keeps data flow clear.
+\\end{itemize}
+
+\\subsection{Real-World / Non-Technical Learnings}
+\\begin{itemize}
+\\item Clean source lists make setup faster.
+\\item A simple UI improves demos and feedback.
+\\item Small features ship faster than large rewrites.
+\\end{itemize}
+
+\\section{Conclusion}
+This project demonstrates a practical RAG system that blends local knowledge with Wikipedia. The design favors clarity and modularity, which makes the system easy to extend with persistence, citations, and evaluation in future work.
+
+\\end{document}
