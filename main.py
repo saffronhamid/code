@@ -1,4 +1,4 @@
-"""Main application entry point for Agentic RAG system"""
+"""Main application application entry point for agentic rag entry point for Agentic RAG system"""
 
 import sys
 from pathlib import Path
