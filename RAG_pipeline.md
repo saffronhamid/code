@@ -87,7 +87,6 @@ If documents change or performance drops, re‑embed and adjust settings.
 
 ---
 
-## 4) Similarity Metric
 
 I used **[SIMILARITY_METRIC]** (often cosine similarity) because it aligns well with embedding geometry and is a standard, efficient choice supported by vector databases.
 
