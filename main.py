@@ -112,7 +112,7 @@ def main():
     rag = AgenticRAG(sources=sources)
     
     example_questions = [
-        "What is the concept of agent loop in autonomous agents?",
+        "what is the concept of agent What is the concept of agent loop in autonomous agents?",
         "What are the key components of LLM-powered agents?",
         "Explain the concept of diffusion models for video generation."
     ]
